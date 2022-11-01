@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -17,16 +15,18 @@ public class MenuUIHandler : MonoBehaviour
     private void Start()
     {
         if (volumeSlider != null) return;
-        volumeSlider = GameObject.Find("Volume Slider").GetComponent<Slider>();
 
+        volumeSlider = GameObject.Find("Volume Slider").GetComponent<Slider>();
         InputName = GameObject.Find("InputField").GetComponent<TMP_InputField>();
-        volumeSlider.value = ScoreManager.Instance.SaveVolume;
+        volumeSlider.value = ScoreManager.Instance.SaveMusicVolume;
+
+        LoadName();
     }
 
     private void Update()
     {
         if (volumeSlider != null)
-        ScoreManager.Instance.SaveVolume = volumeSlider.value;
+        ScoreManager.Instance.SaveMusicVolume = volumeSlider.value;
     }
 
     public void StartNewGame()
@@ -47,12 +47,13 @@ public class MenuUIHandler : MonoBehaviour
 
     public void SaveName()
     {
-        ScoreManager.Instance.PlayerName = InputName.text;
+        ScoreManager.Instance.CurrentPlayerName = InputName.text;
         ScoreManager.Instance.SavePlayerScore();
     }
 
     public void LoadName()
     {
         ScoreManager.Instance.LoadPlayerScore();
+        InputName.text = ScoreManager.Instance.CurrentPlayerName;
     }
 }

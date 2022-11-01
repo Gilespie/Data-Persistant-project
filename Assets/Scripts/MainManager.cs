@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -18,14 +16,16 @@ public class MainManager : MonoBehaviour
     private bool m_Started = false;
     private int m_Points;
 
-    private string m_LastPlayer;
-    private int m_LastScore;
-
     private bool m_GameOver = false;
+    private int bestscore;
+    private string bestname;
 
     // Start is called before the first frame update
     void Start()
     {
+        bestscore = ScoreManager.Instance.LastPlayerScore;
+        bestname = ScoreManager.Instance.LastPlayerName;
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -41,8 +41,8 @@ public class MainManager : MonoBehaviour
             }
         }
 
-        m_LastPlayer = ScoreManager.Instance.PlayerName;
         ScoreManager.Instance.LoadPlayerScore();
+        BestScore.text = "Best score: " + bestname + " " + bestscore;
     }
 
     private void Update()
@@ -73,18 +73,27 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
-        ScoreManager.Instance.PlayerScore = m_Points;
-        m_LastScore = ScoreManager.Instance.PlayerScore;
-        ScoreManager.Instance.SavePlayerScore();
+        ScoreManager.Instance.CurrentPlayerScore = m_Points;
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
-        BestScore.text = "Best score: " + m_LastPlayer + " " + m_LastScore;
+
+        if (ScoreManager.Instance.CurrentPlayerScore >= bestscore)
+        {
+            SetBestScore();
+            BestScore.text = "Best score: " + bestname + " " + bestscore;
+            ScoreManager.Instance.SavePlayerScore();
+        }
     }
 
+    private void SetBestScore()
+    {
+            ScoreManager.Instance.LastPlayerScore = ScoreManager.Instance.CurrentPlayerScore;
+            ScoreManager.Instance.LastPlayerName = ScoreManager.Instance.CurrentPlayerName;
+    }
     public void ReturnToMenu()
     {
         SceneManager.LoadScene(0);
